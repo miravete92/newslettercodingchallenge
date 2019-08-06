@@ -8,13 +8,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.adidaschallenge.common.beans.NewsletterSubscription;
+import com.adidaschallenge.newsletterprivateapi.beans.NewsletterSubscription;
 import com.adidaschallenge.newsletterprivateapi.entities.Newsletter;
 import com.adidaschallenge.newsletterprivateapi.entities.PendingMail;
 import com.adidaschallenge.newsletterprivateapi.entities.Subscription;
 import com.adidaschallenge.newsletterprivateapi.repositories.NewsletterRepository;
 import com.adidaschallenge.newsletterprivateapi.repositories.PendingMailRepository;
 import com.adidaschallenge.newsletterprivateapi.repositories.SubscriptionRepository;
+
+import io.swagger.annotations.ApiOperation;
 
 
 @RestController
@@ -29,6 +31,7 @@ public class SubscriptionController {
 	private NewsletterRepository newsletterRepository;
 	
 	@RequestMapping(method = RequestMethod.POST)
+	@ApiOperation(value = "Create a subscription", notes = "Create a subscription to a newsletter")
     public int createSubscription(@Valid @RequestBody NewsletterSubscription subscription) {
 		Newsletter newsletter = newsletterRepository.findById(subscription.getNewsletterId()).orElse(null);
 		

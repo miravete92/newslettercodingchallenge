@@ -9,7 +9,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.adidaschallenge.common.beans.NewsletterSubscription;
+import com.adidaschallenge.newsletterpublicapi.beans.NewsletterSubscription;
+
 
 @Service
 public class NewsletterPrivateApiService {
