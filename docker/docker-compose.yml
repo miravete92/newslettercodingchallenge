@@ -1,0 +1,59 @@
+version: "3"
+services:
+    newsletter_database:
+        image: miravete92/newsletter-database
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        env_file:
+            - environment.env
+        environment:
+            MYSQL_DATABASE: db_newsletter
+        expose:
+            - '3306'
+        networks:
+            - backend
+    publicapi:
+        image: 'miravete92/newsletter-public-api:latest'
+        env_file:
+            - ./environment.env
+        expose:
+            - "8080"
+        environment:
+            - COM_ADIDASCHALLENGE_NEWSLETTERPUBLICAPI_PRIVATEAPIPATH=http://privateapi:8081
+        networks:
+            - backend
+    privateapi:
+        image: 'miravete92/newsletter-private-api:latest'
+        env_file:
+            - ./environment.env
+        expose:
+            - "8081"
+        depends_on:
+            - newsletter_database
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://newsletter_database/db_newsletter?serverTimezone=UTC
+        networks:
+            - backend
+    sendmailservice:
+        image: 'miravete92/send-mail-service'
+        env_file:
+            - ./environment.env
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://newsletter_database/db_newsletter?serverTimezone=UTC
+        depends_on:
+            - newsletter_database
+        networks:
+            - backend
+    loadbalancerpublic:
+        image: 'dockercloud/haproxy:latest'
+        links:
+            - publicapi
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        ports:
+            - '80:80'
+        networks:
+            - backend
+networks:
+    backend:
+        driver: "bridge"
