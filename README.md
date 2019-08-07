@@ -69,8 +69,8 @@ cd docker
 docker-compose up -d
 ```
 
-Due to initialization times, private and email service could throw an error when they try to connect to database in it's not already alive.
-Check if these service are alive
+Due to initialization times, private and email service could throw an error when they try to connect to database if it's not alive yet.
+Check if these services are alive
 ```
 docker-compose ps
 ```
@@ -84,13 +84,50 @@ docker-compose up -d
 ### Public API
 
 Receives a subscription request from client, validates the data format and sends it to the private API.
-If private API is down, stores failed subscription requests into a queue and retries in a few seconds.
+If private API is down, it stores failed subscription requests into a queue and retries in a few seconds.
 Public api never waits for private API reponse to send a response to the client. If data is valid, sends OK to the client.
+
+#### Public API contract
+
+Create a subscription url:
+```http://apihost/subscription```
+Create a subscription body example (application/json)
+```{
+    "email": "jane.doe@gmail.com",
+    "firstName": "Jane",
+    "gender":"F",
+    "dateOfBirth": "1993-08-06T09:03:35.514Z",
+    "consent": true,
+    "newsletterId": 1
+}```
 
 ### Private API
 
-Receives a subscription request from public api, it also validates the data format, stores this subscription into database, schedules a mail (adding a registry into pendingMails table in database) and returns subscription new ID.
-If subscription newsletterId and email entered already match with a subscription registry, it updates the aditional data (name, gender, consent...) and does not send a new email.
+Receives a subscription request from public api, it also validates the data format, stores this subscription into database, schedules an email (adding a registry into pendingMails table in database) and returns subscription new ID.
+If subscription newsletterId and email entered already match with a subscription registry, it updates the aditional data (name, gender, consent...) and does not schedule a new email.
+
+#### Private API contract
+
+Same as public
+
+### Email Service
+
+It checks every few seconds if there are pending emails in database, and sends them through the smtp server provided in configuration
+
+## Scalability
+
+I added an example for scaling the instances of public service inside docker compose. For example:
+```
+docker-compose up -d --scale publicapi=3
+```
+There is an instance of HAProxy running on docker-compose that balances the load between those services.
 
 
+## Technologies
 
+- Spring boot
+- Swagger
+- HAProxy
+- MySQL
+- Docker
+- Docker compose
