@@ -2,7 +2,10 @@ package com.adidaschallenge.newsletterprivateapi.controllers;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,32 +35,32 @@ public class SubscriptionController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	@ApiOperation(value = "Create a subscription", notes = "Create a subscription to a newsletter")
-    public int createSubscription(@Valid @RequestBody NewsletterSubscription subscription) {
+    public ResponseEntity<Integer> createSubscription(@Valid @RequestBody NewsletterSubscription subscription) {
 		Newsletter newsletter = newsletterRepository.findById(subscription.getNewsletterId()).orElse(null);
 		
 		if(newsletter!=null) {
-			if(subscriptionRepository.findByEmail(subscription.getEmail())!=null) {
-				return -1;
+			Subscription existingSubscription = subscriptionRepository.findByEmailAndNewsletterId(subscription.getEmail(), subscription.getNewsletterId());
+			if(existingSubscription!=null) {
+				BeanUtils.copyProperties(subscription, existingSubscription);
+				existingSubscription = subscriptionRepository.save(existingSubscription);
+				return new ResponseEntity<Integer>(existingSubscription.getId(), HttpStatus.OK);
 			}
-			Subscription newSubscription = new Subscription();
-			newSubscription.setFirstName(subscription.getFirstName());
-			newSubscription.setEmail(subscription.getEmail());
-			newSubscription.setDateOfBirth(subscription.getDateOfBirth());
-			newSubscription.setConsent(subscription.isConsent());
-			newSubscription.setGender(subscription.getGender());
-			newSubscription.setNewsletterId(subscription.getNewsletterId());
-			newSubscription = subscriptionRepository.save(newSubscription);
-			
-			PendingMail newPendingMail = new PendingMail();
-			newPendingMail.setReceiver(newSubscription.getEmail());
-			newPendingMail.setMailContent(newsletter.getWelcomeMail());
-			newPendingMail.setSent(false);
-			newPendingMail = pendingMailRepository.save(newPendingMail);
-			
-			return newSubscription.getId();
+			else {
+				Subscription newSubscription = new Subscription();
+				BeanUtils.copyProperties(subscription, newSubscription);
+				newSubscription = subscriptionRepository.save(newSubscription);
+				
+				PendingMail newPendingMail = new PendingMail();
+				newPendingMail.setReceiver(newSubscription.getEmail());
+				newPendingMail.setMailContent(newsletter.getWelcomeMail());
+				newPendingMail.setSent(false);
+				newPendingMail = pendingMailRepository.save(newPendingMail);
+				
+				return new ResponseEntity<Integer>(newSubscription.getId(), HttpStatus.OK);
+			}
 		}
 		else {
-			return -1;
+			return new ResponseEntity<Integer>(-1, HttpStatus.BAD_REQUEST);
 		}
     }
 }

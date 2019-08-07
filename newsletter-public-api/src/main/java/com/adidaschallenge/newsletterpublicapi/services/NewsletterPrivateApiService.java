@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.adidaschallenge.newsletterpublicapi.beans.NewsletterSubscription;
@@ -32,9 +33,13 @@ public class NewsletterPrivateApiService {
 			System.out.println("SubscribeRequestReceived");
 	        return CompletableFuture.completedFuture(apiResult);
 		}
+		catch(HttpClientErrorException e) {
+			System.out.println("SubscribeRequestFailed: " + e.getStatusCode().toString());
+			return CompletableFuture.completedFuture(-1);
+		}
 		catch(Exception e) {
 			e.printStackTrace();
-			System.out.println("SubscribeRequestFailed");
+			System.out.println("SubscribeRequestFailed: "+e.getMessage());
 			return CompletableFuture.completedFuture(-1);
 		}
 		

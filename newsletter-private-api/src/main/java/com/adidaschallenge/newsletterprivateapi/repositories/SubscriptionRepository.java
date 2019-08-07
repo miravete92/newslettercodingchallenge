@@ -7,5 +7,5 @@ import com.adidaschallenge.newsletterprivateapi.entities.Subscription;
 
 @Repository
 public interface SubscriptionRepository extends CrudRepository<Subscription, Integer>{
-	Subscription findByEmail(String email);
+	Subscription findByEmailAndNewsletterId(String email, int newsletterId);
 }

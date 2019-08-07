@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+//This class should be shared with send pending mails project, extracting it into a maven common project
 @Entity
 public class PendingMail {
 	@Id
@@ -13,6 +14,7 @@ public class PendingMail {
 
     private String receiver;
 
+    // Should be a reference to an email entity containing the subject, the content and some extra parameters
     private String mailContent;
     
     private boolean sent;

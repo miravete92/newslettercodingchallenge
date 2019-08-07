@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
+//This class could be shared with public API project, extracting it into a maven common project
 public class NewsletterSubscription {
 	
 	@Email(message="Email is not valid")
@@ -16,7 +17,8 @@ public class NewsletterSubscription {
 	
 	@ApiModelProperty(value = "User first name", required = false)
 	private String firstName;
-	
+
+	// We need to add extra validation for this field (Check that the value is M, F or null), through custom validator
 	@ApiModelProperty(value = "User gender (M|F)", required = false)
 	private char gender;
 	
