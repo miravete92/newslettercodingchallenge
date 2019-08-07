@@ -130,9 +130,8 @@ There is an instance of HAProxy running on docker-compose that balances the load
 
 ## Technologies
 
-- Spring boot
-- Swagger
-- HAProxy
-- MySQL
-- Docker
-- Docker compose
+- Spring boot: It allows a fast implementation of standalone microservices that doesn't need an application server, perfect for dockerize ;)
+- Swagger: Generates an API referece with a few lines of code.
+- HAProxy: Easy to add to docker-compose file. It's a simple solution to balance the load between multiple instances of a service.
+- MySQL: One of the most common SQL databases. It has good integration with springboot.
+- Docker and docker-compose: Easy to learn and intuitive way to run and connect multiple dockered service instances.
