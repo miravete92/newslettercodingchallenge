@@ -1,6 +1,8 @@
 package com.adidaschallenge.newsletterpublicapi.services;
 
 import java.net.URI;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -17,10 +19,13 @@ import com.adidaschallenge.newsletterpublicapi.beans.NewsletterSubscription;
 public class NewsletterPrivateApiService {
 	private final RestTemplate restTemplate;
 	
+	private Queue<NewsletterSubscription> pendingSubscriptionsQueue;
+	
 	@Value("${com.adidaschallenge.newsletterpublicapi.privateapipath}")
 	private String privateApiPath;
 	
 	public NewsletterPrivateApiService(RestTemplateBuilder restTemplateBuilder) {
+		this.pendingSubscriptionsQueue = new ArrayDeque<NewsletterSubscription>();
 		this.restTemplate = restTemplateBuilder.build();
 	}
 	
@@ -38,10 +43,19 @@ public class NewsletterPrivateApiService {
 			return CompletableFuture.completedFuture(-1);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
 			System.out.println("SubscribeRequestFailed: "+e.getMessage());
+			System.out.println("Added to pending subscriptions");
+			this.pendingSubscriptionsQueue.add(subscription);
 			return CompletableFuture.completedFuture(-1);
 		}
 		
     }
+	
+	public void sendPendingSubscriptionsToServer() {
+		if(this.pendingSubscriptionsQueue.size()>0) {
+			System.out.println("Sending pending subscriptions to the server: "+this.pendingSubscriptionsQueue.size());
+			NewsletterSubscription subscription = this.pendingSubscriptionsQueue.poll();
+			if(subscription!=null) this.subscribe(subscription);
+		}
+	}
 }
