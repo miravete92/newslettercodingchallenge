@@ -90,16 +90,21 @@ Public api never waits for private API reponse to send a response to the client.
 #### Public API contract
 
 Create a subscription url:
-```http://apihost/subscription```
+```
+http://apihost/subscription
+```
+
 Create a subscription body example (application/json)
-```{
+```
+{
     "email": "jane.doe@gmail.com",
     "firstName": "Jane",
     "gender":"F",
     "dateOfBirth": "1993-08-06T09:03:35.514Z",
     "consent": true,
     "newsletterId": 1
-}```
+}
+```
 
 ### Private API
 
