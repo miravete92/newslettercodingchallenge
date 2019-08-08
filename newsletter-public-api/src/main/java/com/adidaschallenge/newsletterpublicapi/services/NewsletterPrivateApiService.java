@@ -1,9 +1,9 @@
 package com.adidaschallenge.newsletterpublicapi.services;
 
 import java.net.URI;
-import java.util.ArrayDeque;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -19,13 +19,13 @@ import com.adidaschallenge.newsletterpublicapi.beans.NewsletterSubscription;
 public class NewsletterPrivateApiService {
 	private final RestTemplate restTemplate;
 	
-	private Queue<NewsletterSubscription> pendingSubscriptionsQueue;
+	private BlockingQueue<NewsletterSubscription> pendingSubscriptionsQueue;
 	
 	@Value("${com.adidaschallenge.newsletterpublicapi.privateapipath}")
 	private String privateApiPath;
 	
 	public NewsletterPrivateApiService(RestTemplateBuilder restTemplateBuilder) {
-		this.pendingSubscriptionsQueue = new ArrayDeque<NewsletterSubscription>();
+		this.pendingSubscriptionsQueue = new LinkedBlockingQueue<NewsletterSubscription>();
 		this.restTemplate = restTemplateBuilder.build();
 	}
 	

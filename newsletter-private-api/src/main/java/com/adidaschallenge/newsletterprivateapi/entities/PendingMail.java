@@ -5,7 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-//This class should be shared with send pending mails project, extracting it into a maven common project
+//This class should be shared with send-mail-service project. It should be extracted into a common artifact and referenced from both projects.
 @Entity
 public class PendingMail {
 	@Id

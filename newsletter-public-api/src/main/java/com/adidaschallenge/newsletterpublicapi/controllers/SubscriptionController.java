@@ -24,6 +24,7 @@ public class SubscriptionController {
 	public SubscriptionController(NewsletterPrivateApiService privateApiService) {
 		this.privateApiService = privateApiService;
 	}
+	
 	@RequestMapping(method = RequestMethod.POST)
 	@ApiOperation(value = "Create a subscription", notes = "Public endpoint for creating a subscription to a newsletter")
     public String subscribe(@Valid @RequestBody NewsletterSubscription subscription) {
